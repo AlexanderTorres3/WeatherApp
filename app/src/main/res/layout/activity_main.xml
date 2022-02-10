@@ -91,6 +91,7 @@
         android:layout_margin="24dp"
         android:backgroundTint="@color/grey"
         android:textColor="@color/black"
+        android:textAllCaps="false"
         android:text="@string/forecast_button"
         android:onClick="openForecast"
         app:layout_constraintTop_toBottomOf="@id/pressure"
