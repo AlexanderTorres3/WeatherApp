@@ -149,7 +149,7 @@ class ForecastActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        recyclerView.adapter = ForecastRecyclerViewAdapter(forecastTempData, this.applicationContext)
+        recyclerView.adapter = ForecastRecyclerViewAdapter(forecastTempData)
 
     }
 }

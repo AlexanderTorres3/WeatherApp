@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class ForecastRecyclerViewAdapter(private val data: List<DayForecast>, private val context: Context)
+class ForecastRecyclerViewAdapter(private val data: List<DayForecast>)
     : RecyclerView.Adapter<ForecastRecyclerViewAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -25,7 +25,7 @@ class ForecastRecyclerViewAdapter(private val data: List<DayForecast>, private v
         private var sunrise: TextView = view.findViewById(R.id.forecastSunrise)
         private var sunset: TextView = view.findViewById(R.id.forecastSunset)
         @RequiresApi(Build.VERSION_CODES.O)
-        fun bind(info: DayForecast, context: Context){
+        fun bind(info: DayForecast){
             val dateInstant = Instant.ofEpochSecond(info.date)
             val dateTime = LocalDateTime.ofInstant(dateInstant, ZoneId.systemDefault())
             val sunriseInstant = Instant.ofEpochSecond(info.sunrise)
@@ -36,12 +36,12 @@ class ForecastRecyclerViewAdapter(private val data: List<DayForecast>, private v
             val timeFormatter = DateTimeFormatter.ofPattern("h:mma")
 
             date.text = dateFormatter.format(dateTime)
-            temp.text = context.getString(R.string.forecast_temp, info.temp.day)
-            highTemp.text = context.getString(R.string.forecast_high, info.temp.max)
-            lowTemp.text = context.getString(R.string.forecast_low, info.temp.min)
-            sunrise.text =context.getString(R.string.forecast_sunrise,
+            temp.text = itemView.context.getString(R.string.forecast_temp, info.temp.day)
+            highTemp.text = itemView.context.getString(R.string.forecast_high, info.temp.max)
+            lowTemp.text = itemView.context.getString(R.string.forecast_low, info.temp.min)
+            sunrise.text =itemView.context.getString(R.string.forecast_sunrise,
                 timeFormatter.format(sunriseTime))
-            sunset.text = context.getString(R.string.forecast_sunset,
+            sunset.text = itemView.context.getString(R.string.forecast_sunset,
                 timeFormatter.format(sunsetTime))
 
 
@@ -56,7 +56,7 @@ class ForecastRecyclerViewAdapter(private val data: List<DayForecast>, private v
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(data[position], context)
+        holder.bind(data[position])
     }
 
     override fun getItemCount() = data.size
