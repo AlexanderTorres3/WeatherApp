@@ -6,9 +6,11 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -24,6 +26,8 @@ class ForecastRecyclerViewAdapter(private val data: List<DayForecast>)
         private var lowTemp: TextView = view.findViewById(R.id.forecastLow)
         private var sunrise: TextView = view.findViewById(R.id.forecastSunrise)
         private var sunset: TextView = view.findViewById(R.id.forecastSunset)
+        private var image: ImageView = view.findViewById(R.id.forecastImage)
+
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(info: DayForecast){
             val dateInstant = Instant.ofEpochSecond(info.date)
@@ -43,6 +47,12 @@ class ForecastRecyclerViewAdapter(private val data: List<DayForecast>)
                 timeFormatter.format(sunriseTime))
             sunset.text = itemView.context.getString(R.string.forecast_sunset,
                 timeFormatter.format(sunsetTime))
+
+            val iconName = info.weather.firstOrNull()?.icon
+            val iconURL = "https://openweathermap.org/img/wn/${iconName}@2x.png"
+            Glide.with(itemView)
+                .load(iconURL)
+                .into(image)
 
 
         }
