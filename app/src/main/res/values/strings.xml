@@ -13,4 +13,5 @@
     <string name="forecast_low">Low: %.1f°</string>
     <string name="forecast_sunrise">Sunrise: %s</string>
     <string name="forecast_sunset">Sunset: %s</string>
+    <string name="ok">ok</string>
 </resources>
