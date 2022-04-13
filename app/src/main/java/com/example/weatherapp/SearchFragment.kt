@@ -1,18 +1,24 @@
 package com.example.weatherapp
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.databinding.FragmentSearchBinding
+import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import retrofit2.Retrofit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -20,6 +26,7 @@ class SearchFragment :Fragment(R.layout.fragment_search){
     @Inject lateinit var viewModel: SearchFragmentViewModel
     private lateinit var binding: FragmentSearchBinding
     private lateinit var currentConditions: CurrentConditions
+    private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,6 +38,7 @@ class SearchFragment :Fragment(R.layout.fragment_search){
         return view
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -58,13 +66,81 @@ class SearchFragment :Fragment(R.layout.fragment_search){
 
         binding.zipCodeButton.setOnClickListener {
             try {
-                viewModel.loadData()
+                viewModel.loadDataZip()
                 val action = SearchFragmentDirections
-                    .actionSearchFragmentToCurrentConditionsFragment(currentConditions, viewModel.zipCode.toString())
+                    .actionSearchFragmentToCurrentConditionsFragment(currentConditions)
                 findNavController().navigate(action)
             } catch (e: retrofit2.HttpException){
                 SubmitErrorDialog().show(childFragmentManager, SubmitErrorDialog.TAG)
             }
+        }
+
+        binding.getLocationButton.setOnClickListener {
+            requestLocation()
+            try {
+                viewModel.loadDataLatLon()
+                val action = SearchFragmentDirections
+                    .actionSearchFragmentToCurrentConditionsFragment(currentConditions)
+                findNavController().navigate(action)
+            } catch (e: retrofit2.HttpException){
+                SubmitErrorDialog().show(childFragmentManager, SubmitErrorDialog.TAG)
+            }
+        }
+
+        locationPermissionRequest = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ){permissions ->
+            when {
+                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                    requestLocation()
+                }
+                else -> {
+
+                }
+            }
+        }
+    }
+
+
+
+    private fun requestLocation(){
+        if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)){
+            AlertDialog.Builder(context)
+                .setTitle(R.string.location_rationale)
+                .setNeutralButton("Ok"){_, _->
+                    locationPermissionRequest.launch(
+                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    )
+                }
+                .show()
+        }else {
+            locationPermissionRequest.launch(
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+            )
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requestLocationUpdate()
+    }
+
+    private fun requestLocationUpdate(){
+        if (ActivityCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        val locationProvider = LocationServices.getFusedLocationProviderClient(context!!)
+
+        locationProvider.lastLocation.addOnSuccessListener {
+            viewModel.updateLatLon(it.latitude, it.longitude)
         }
     }
 

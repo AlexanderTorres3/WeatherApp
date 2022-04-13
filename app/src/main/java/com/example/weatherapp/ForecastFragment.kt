@@ -23,7 +23,7 @@ class ForecastFragment: Fragment(R.layout.fragment_forecast) {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadData(args.zipCode)
+        viewModel.loadData(args.coordinates)
         viewModel.dailyForecast.observe(this){ dailyForecast ->
             recyclerView.adapter = ForecastRecyclerViewAdapter(dailyForecast.forecastList)
         }

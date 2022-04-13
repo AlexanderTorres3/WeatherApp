@@ -1,18 +1,19 @@
 package com.example.weatherapp
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import retrofit2.HttpException
 import javax.inject.Inject
 
 class SearchFragmentViewModel @Inject constructor(private val api: Api) : ViewModel() {
 
     var zipCode: String? = null
+
+    var coordinates = Coordinate(null, null)
+    var latitude: Double? = null
+    var longitude: Double? = null
 
     private val _currentConditions = MutableLiveData<CurrentConditions>()
 
@@ -35,11 +36,27 @@ class SearchFragmentViewModel @Inject constructor(private val api: Api) : ViewMo
             _enableButton.value = isValidZipCode(zipCode)
         }
     }
+
+    fun updateLatLon(lat: Double, lon: Double){
+        latitude = lat
+        longitude = lon
+        coordinates = Coordinate(lat, lon)
+    }
+
     private fun isValidZipCode(zipCode: String): Boolean{
         return zipCode.length == 5 && zipCode.all { it.isDigit() }
     }
 
-    fun loadData() = runBlocking {
-        launch{ _currentConditions.value = api.getCurrentConditions(zipCode!!)}
+    fun loadDataZip() = runBlocking {
+        launch{
+            _currentConditions.value = api.getCurrentConditionsZip(zipCode!!)
+            coordinates = currentConditions.value?.coordinate ?: Coordinate(null, null)
+        }
     }
+
+    fun loadDataLatLon() = runBlocking{
+        launch{ _currentConditions.value = api.getCurrentConditionsLatLon(latitude, longitude)}
+    }
+
+
 }

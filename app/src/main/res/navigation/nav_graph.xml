@@ -16,8 +16,6 @@
         <argument
             android:name="currentConditions"
             app:argType="com.example.weatherapp.CurrentConditions" />
-        <argument
-            android:name="zipCode"/>
     </fragment>
 
     <fragment
@@ -26,8 +24,8 @@
         android:label="ForecastFragment"
         tools:layout="@layout/fragment_forecast">
         <argument
-            android:name="zipCode"
-            app:argType="string"/>
+            android:name="coordinates"
+            app:argType="com.example.weatherapp.Coordinate"/>
     </fragment>
 
     <fragment

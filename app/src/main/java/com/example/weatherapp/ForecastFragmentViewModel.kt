@@ -12,7 +12,7 @@ class ForecastFragmentViewModel @Inject constructor(private val api: Api) : View
     val dailyForecast: LiveData<DailyForecast>
         get() = _dailyForecast
 
-    fun loadData(zipCode: String) = runBlocking{
-        launch { _dailyForecast.value = api.getDailyForecast(zipCode) }
+    fun loadData(coordinate: Coordinate) = runBlocking{
+        launch { _dailyForecast.value = api.getDailyForecast(coordinate.latitude, coordinate.longitude) }
     }
 }
