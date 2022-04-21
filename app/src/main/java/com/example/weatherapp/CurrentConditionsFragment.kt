@@ -1,9 +1,7 @@
 package com.example.weatherapp
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -23,8 +21,11 @@ class CurrentConditionsFragment : Fragment(R.layout.fragment_current_conditions)
         binding = FragmentCurrentConditionsBinding.bind(view)
 
         binding.currentConditionsButton.setOnClickListener {
+            val lat = args.currentConditions.coordinate.latitude
+            val lon = args.currentConditions.coordinate.longitude
+            val coordinates = Coordinate(lat, lon)
             val action = CurrentConditionsFragmentDirections
-                .actionCurrentConditionsFragmentToForecastFragment(args.zipCode)
+                .actionCurrentConditionsFragmentToForecastFragment(coordinates)
             findNavController().navigate(action)
         }
     }

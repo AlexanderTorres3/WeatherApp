@@ -8,7 +8,7 @@ import androidx.fragment.app.DialogFragment
 class SubmitErrorDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
        AlertDialog.Builder(requireContext())
-           .setMessage("Error Fetching data for the zip code")
+           .setMessage(R.string.submit_error_dialog)
            .setPositiveButton(R.string.ok, null)
            .create()
 

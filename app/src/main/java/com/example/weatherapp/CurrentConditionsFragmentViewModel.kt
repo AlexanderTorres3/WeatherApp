@@ -13,6 +13,6 @@ class CurrentConditionsFragmentViewModel @Inject constructor(private val api: Ap
         get() = _currentConditions
 
     fun loadData() = runBlocking{
-        launch { _currentConditions.value = api.getCurrentConditions("55055")}
+        launch { _currentConditions.value = api.getCurrentConditionsZip("55055")}
     }
 }
