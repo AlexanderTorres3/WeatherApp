@@ -1,5 +1,6 @@
 package com.example.weatherapp
 
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,6 +21,8 @@ class SearchFragmentViewModel @Inject constructor(private val api: Api) : ViewMo
     private val _enableButton = MutableLiveData(false)
 
     private val _showErrorDialog = MutableLiveData(false)
+
+    private var notificaitonStatus = false
 
     val currentConditions: LiveData<CurrentConditions>
         get() = _currentConditions
@@ -56,6 +59,17 @@ class SearchFragmentViewModel @Inject constructor(private val api: Api) : ViewMo
 
     fun loadDataLatLon() = runBlocking{
         launch{ _currentConditions.value = api.getCurrentConditionsLatLon(latitude, longitude)}
+    }
+
+    fun getNotificationStatus(): Boolean{
+        return notificaitonStatus
+    }
+
+    fun setNotificationsToTrue(){
+        notificaitonStatus = true
+    }
+    fun setNotificationsToFalse(){
+        notificaitonStatus = false
     }
 
 
