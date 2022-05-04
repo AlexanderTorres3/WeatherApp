@@ -26,6 +26,9 @@
         <argument
             android:name="coordinates"
             app:argType="com.example.weatherapp.Coordinate"/>
+        <action
+            android:id="@+id/action_forecastFragment_to_forecastDetailFragment"
+            app:destination="@id/forecastDetailFragment" />
     </fragment>
 
     <fragment
@@ -36,5 +39,14 @@
         <action
             android:id="@+id/action_searchFragment_to_currentConditionsFragment"
             app:destination="@id/currentConditionsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/forecastDetailFragment"
+        android:name="com.example.weatherapp.ForecastDetailFragment"
+        android:label="ForecastDetailFragment">
+        <argument
+            android:name="dayForecast"
+            app:argType="com.example.weatherapp.DayForecast"/>
     </fragment>
 </navigation>
