@@ -3,6 +3,7 @@ package com.example.weatherapp
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -12,13 +13,12 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class ForecastRecyclerViewAdapter(private val data: List<DayForecast>)
+class ForecastRecyclerViewAdapter(private val data: List<DayForecast>, private val itemClicked: ItemClicked )
     : RecyclerView.Adapter<ForecastRecyclerViewAdapter.ViewHolder>() {
 
     class ViewHolder(private val binding: ForecastDataBinding) : RecyclerView.ViewHolder(binding.root) {
-
         @RequiresApi(Build.VERSION_CODES.O)
-        fun bind(info: DayForecast){
+        fun bind(info: DayForecast, itemClicked: ItemClicked){
             val dateInstant = Instant.ofEpochSecond(info.date)
             val dateTime = LocalDateTime.ofInstant(dateInstant, ZoneId.systemDefault())
             val sunriseInstant = Instant.ofEpochSecond(info.sunrise)
@@ -43,7 +43,9 @@ class ForecastRecyclerViewAdapter(private val data: List<DayForecast>)
                 .load(iconURL)
                 .into(binding.forecastImage)
 
-
+            itemView.setOnClickListener{
+                itemClicked.onItemClicked(info)
+            }
         }
     }
 
@@ -55,7 +57,7 @@ class ForecastRecyclerViewAdapter(private val data: List<DayForecast>)
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(data[position])
+        holder.bind(data[position], itemClicked)
     }
 
     override fun getItemCount() = data.size

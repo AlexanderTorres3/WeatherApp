@@ -2,6 +2,7 @@ package com.example.weatherapp
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -87,6 +88,29 @@ class SearchFragment :Fragment(R.layout.fragment_search){
             }
         }
 
+        binding.notificationButton.setOnClickListener {
+            requestLocation()
+            if (ActivityCompat.checkSelfPermission(
+                    context!!,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    context!!,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+
+            }else {
+                if (viewModel.getNotificationStatus() == false) {
+                    viewModel.setNotificationsToTrue()
+                    requireActivity().startService(Intent(context, NotificationService::class.java))
+                } else {
+                    viewModel.setNotificationsToFalse()
+                    requireActivity().stopService(Intent(context, NotificationService::class.java))
+                }
+            }
+            updateNotificationButton()
+        }
+
         locationPermissionRequest = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ){permissions ->
@@ -104,18 +128,18 @@ class SearchFragment :Fragment(R.layout.fragment_search){
 
 
     private fun requestLocation(){
-        if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)){
+        if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
             AlertDialog.Builder(context)
                 .setTitle(R.string.location_rationale)
                 .setNeutralButton("Ok"){_, _->
                     locationPermissionRequest.launch(
-                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
                     )
                 }
                 .show()
         }else {
             locationPermissionRequest.launch(
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
             )
         }
     }
@@ -123,6 +147,7 @@ class SearchFragment :Fragment(R.layout.fragment_search){
     override fun onResume() {
         super.onResume()
         requestLocationUpdate()
+        updateNotificationButton()
     }
 
     private fun requestLocationUpdate(){
@@ -140,8 +165,17 @@ class SearchFragment :Fragment(R.layout.fragment_search){
         val locationProvider = LocationServices.getFusedLocationProviderClient(context!!)
 
         locationProvider.lastLocation.addOnSuccessListener {
-            viewModel.updateLatLon(it.latitude, it.longitude)
+            if(it != null) {
+                viewModel.updateLatLon(it.latitude, it.longitude)
+            }
         }
     }
 
+    private fun updateNotificationButton(){
+        if (!viewModel.getNotificationStatus()){
+            binding.notificationButton.text = "Turn Notifications On"
+        } else{
+            binding.notificationButton.text = "Turn Notifications Off"
+        }
+    }
 }

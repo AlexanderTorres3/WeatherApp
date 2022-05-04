@@ -1,6 +1,10 @@
 package com.example.weatherapp
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 class ForecastTemp (
     val day: Float,
     val min: Float,
-    val max:Float)
+    val max:Float) : Parcelable

@@ -2,7 +2,9 @@ package com.example.weatherapp
 
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +27,15 @@ class ForecastFragment: Fragment(R.layout.fragment_forecast) {
         super.onResume()
         viewModel.loadData(args.coordinates)
         viewModel.dailyForecast.observe(this){ dailyForecast ->
-            recyclerView.adapter = ForecastRecyclerViewAdapter(dailyForecast.forecastList)
+            recyclerView.adapter = ForecastRecyclerViewAdapter(
+                dailyForecast.forecastList,
+                object: ItemClicked{
+                    override fun onItemClicked(info: DayForecast) {
+                        val action = ForecastFragmentDirections
+                            .actionForecastFragmentToForecastDetailFragment(info)
+                        findNavController().navigate(action)
+                    }
+                })
         }
     }
 }
